@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 Movie Recommendation System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .recommendations {
+            margin-top: 20px;
+        }
+
+        .recommendation-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s ease;
+        }
+
+        .recommendation-item:hover {
+            transform: translateX(5px);
+        }
+
+        .recommendation-item h3 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+        }
+
+        .recommendation-item p {
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .similarity-score {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .movie-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .movie-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .movie-card p {
+            color: #666;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .rating {
+            background: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .how-it-works {
+            display: grid;
+            gap: 20px;
+        }
+
+        .step {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s ease;
+        }
+
+        .step:hover {
+            transform: translateX(5px);
+        }
+
+        .step h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .step p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .step ul {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        .step li {
+            color: #666;
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 Movie Recommendation System</h1>
+            <p>Discover your next favorite movie using AI-powered recommendations</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Recommendation Form -->
+            <div class="card">
+                <h2>🎯 Get Recommendations</h2>
+                <form id="recommendationForm">
+                    <div class="form-group">
+                        <label for="movieSelect">Choose a movie you like:</label>
+                        <select id="movieSelect" required>
+                            <option value="">Select a movie...</option>
+                            {% for movie in movies %}
+                            <option value="{{ movie.title }}">{{ movie.title }} ({{ movie.year }}) - {{ movie.genre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="numRecommendations">Number of recommendations:</label>
+                        <input type="number" id="numRecommendations" min="1" max="10" value="5" required>
+                    </div>
+                    <button type="submit" class="btn">🎬 Get Recommendations</button>
+                </form>
+                
+                <div id="loading" class="loading" style="display: none;">
+                    <p>🤖 Analyzing movies and finding recommendations...</p>
+                </div>
+                
+                <div id="error" class="error" style="display: none;"></div>
+                
+                <div id="recommendations" class="recommendations"></div>
+            </div>
+
+            <!-- How It Works -->
+            <div class="card">
+                <h2>🧠 How It Works</h2>
+                <div class="how-it-works">
+                    <div class="step">
+                        <h3>1️⃣ Text Vectorization (TF-IDF)</h3>
+                        <p>Movie descriptions are converted into numerical vectors using TF-IDF. This process:</p>
+                        <ul>
+                            <li>Counts word frequency in each movie description</li>
+                            <li>Weights words by their importance across all movies</li>
+                            <li>Creates high-dimensional vectors for comparison</li>
+                        </ul>
+                    </div>
+                    <div class="step">
+                        <h3>2️⃣ Similarity Calculation (Cosine)</h3>
+                        <p>Cosine similarity measures the angle between movie vectors:</p>
+                        <ul>
+                            <li>Each movie becomes a point in high-dimensional space</li>
+                            <li>Smaller angles = more similar movies</li>
+                            <li>Score range: 0 (no similarity) to 1 (identical)</li>
+                        </ul>
+                    </div>
+                    <div class="step">
+                        <h3>3️⃣ Recommendation Generation</h3>
+                        <p>The system processes your selection:</p>
+                        <ul>
+                            <li>Finds your movie's vector in the dataset</li>
+                            <li>Calculates similarity with all other movies</li>
+                            <li>Ranks movies by similarity score</li>
+                            <li>Returns top N most similar movies</li>
+                        </ul>
+                    </div>
+                    <div class="step">
+                        <h3>4️⃣ Results Display</h3>
+                        <p>You receive personalized recommendations:</p>
+                        <ul>
+                            <li>Ranked list of similar movies</li>
+                            <li>Similarity scores (0.0 - 1.0)</li>
+                            <li>Movie details (year, genre, rating)</li>
+                            <li>Instant results with no page refresh</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="card">
+            <h2>📊 Dataset Statistics</h2>
+            <div id="stats">
+                <div class="loading">Loading statistics...</div>
+            </div>
+        </div>
+
+        <!-- All Movies -->
+        <div class="card">
+            <h2>📽️ All Available Movies</h2>
+            <div class="movies-grid">
+                {% for movie in movies %}
+                <div class="movie-card">
+                    <h3>{{ movie.title }}</h3>
+                    <p><strong>Year:</strong> {{ movie.year }}</p>
+                    <p><strong>Genre:</strong> {{ movie.genre }}</p>
+                    <span class="rating">⭐ {{ movie.rating }}/10</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load statistics on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+        });
+
+        // Handle recommendation form submission
+        document.getElementById('recommendationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            getRecommendations();
+        });
+
+        async function getRecommendations() {
+            const movieTitle = document.getElementById('movieSelect').value;
+            const topN = document.getElementById('numRecommendations').value;
+            
+            if (!movieTitle) {
+                showError('Please select a movie.');
+                return;
+            }
+
+            // Show loading
+            showLoading(true);
+            hideError();
+            clearRecommendations();
+
+            try {
+                const response = await fetch('/recommend', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        movie_title: movieTitle,
+                        top_n: parseInt(topN)
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayRecommendations(data.recommendations, data.input_movie);
+                } else {
+                    showError('No recommendations found for this movie.');
+                }
+            } catch (error) {
+                showError('Error getting recommendations. Please try again.');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function displayRecommendations(recommendations, inputMovie) {
+            const container = document.getElementById('recommendations');
+            
+            if (recommendations.length === 0) {
+                container.innerHTML = '<div class="error">No recommendations found for this movie.</div>';
+                return;
+            }
+
+            let html = `<div class="success">🎬 Because you liked <strong>"${inputMovie}"</strong>, you might also enjoy:</div>`;
+            
+            recommendations.forEach(rec => {
+                html += `
+                    <div class="recommendation-item">
+                        <h3>🏆 ${rec.rank}. ${rec.title} (${rec.year})</h3>
+                        <p><strong>Genre:</strong> ${rec.genre}</p>
+                        <p><strong>Rating:</strong> ⭐ ${rec.rating}/10</p>
+                        <span class="similarity-score">Similarity: ${rec.similarity_score}</span>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch('/stats');
+                const stats = await response.json();
+                
+                const statsContainer = document.getElementById('stats');
+                statsContainer.innerHTML = `
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>${stats.total_movies}</h3>
+                            <p>Total Movies</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${stats.year_range}</h3>
+                            <p>Year Range</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${stats.average_rating}</h3>
+                            <p>Average Rating</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${stats.rating_range}</h3>
+                            <p>Rating Range</p>
+                        </div>
+                    </div>
+                    <h3 style="margin-top: 30px; color: #667eea;">🏆 Top Rated Movies</h3>
+                    <div class="movies-grid">
+                        ${stats.top_movies.map(movie => `
+                            <div class="movie-card">
+                                <h3>${movie.title}</h3>
+                                <p><strong>Year:</strong> ${movie.year}</p>
+                                <span class="rating">⭐ ${movie.rating}/10</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('stats').innerHTML = '<div class="error">Error loading statistics.</div>';
+            }
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+
+        function clearRecommendations() {
+            document.getElementById('recommendations').innerHTML = '';
+        }
+    </script>
+</body>
+</html> 
