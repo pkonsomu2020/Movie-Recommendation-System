@@ -23,6 +23,12 @@ A comprehensive content-based movie recommendation system built with Python and 
 - matplotlib
 - seaborn
 
+## 🌐 Live Demo
+
+**🎬 Your Movie Recommendation System is now live!**
+
+👉 **[Try it now: https://movie-recommendation-system-0u9l.onrender.com/](https://movie-recommendation-system-0u9l.onrender.com/)**
+
 ## 🛠️ Installation
 
 1. **Clone or download the project files**
@@ -32,7 +38,7 @@ A comprehensive content-based movie recommendation system built with Python and 
    pip install -r requirements.txt
    ```
 
-3. **🌐 Start the Web Application (Recommended):**
+3. **🌐 Start the Web Application (Local):**
    ```bash
    python start_web_app.py
    ```
@@ -96,8 +102,10 @@ for rec in recommendations:
     print(f"{rec['title']} - Similarity: {rec['similarity_score']}")
 ```
 
-### 🌐 Web Interface (Recommended)
-Run `python start_web_app.py` and open your browser to **http://localhost:5000**
+### 🌐 Web Interface
+**Live Demo**: [https://movie-recommendation-system-0u9l.onrender.com/](https://movie-recommendation-system-0u9l.onrender.com/)
+
+**Local Development**: Run `python start_web_app.py` and open your browser to **http://localhost:5000**
 
 Features:
 - 🎯 Interactive movie selection
@@ -124,6 +132,8 @@ Run `python interactive_demo.py` and choose from:
 🏆 4. Memento (2000) - Thriller, Mystery - Similarity: 0.567
 🏆 5. The Sixth Sense (1999) - Thriller, Mystery - Similarity: 0.534
 ```
+
+**🌐 Try it live**: [https://movie-recommendation-system-0u9l.onrender.com/](https://movie-recommendation-system-0u9l.onrender.com/)
 
 ## 🔧 Technical Details
 
